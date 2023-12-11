@@ -16,6 +16,20 @@ import {cn} from "../lib/utils";
 import {useState} from "react";
 import CustomDialog from "./CustomDialog";
 
+// import {Button} from "@/components/ui/button";
+// import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
 const Task = ({id, title, description, status}: {id: string; title: string; description?: string; status: string}) => {
   const [taskTitle, setTaskTitle] = useState(title);
   const [taskDesc, setTaskDesc] = useState(description);
@@ -39,15 +53,18 @@ const Task = ({id, title, description, status}: {id: string; title: string; desc
   };
 
   return (
-    <CustomDialog
-      targetComponent={
+    <Sheet>
+      <SheetTrigger asChild>
         <div
-          className={cn("cursor-move flex justify-between items-start px-3 py-2 bg-white text-black rounded-lg", {
-            "border-2 border-sky-500": status === "TODO",
-            "border-2 border-amber-500": status === "IN_PROGRESS",
-            "border-2 border-emerald-500": status === "DONE",
-            "opacity-75 shadow-md border-dotted border-4": isDragging,
-          })}
+          className={cn(
+            "cursor-grab min-h-[80px] flex justify-between items-start p-2 bg-white text-black rounded-lg",
+            {
+              "border-2 border-sky-500": status === "TODO",
+              "border-2 border-amber-500": status === "IN_PROGRESS",
+              "border-2 border-emerald-500": status === "DONE",
+              "opacity-75 shadow-md border-dotted border-4": isDragging,
+            }
+          )}
           draggable
           onDragStart={() => {
             dragTask(id);
@@ -56,8 +73,7 @@ const Task = ({id, title, description, status}: {id: string; title: string; desc
           onDragEnd={() => setIsDragging(false)}
         >
           <div className="flex flex-col gap-2">
-            <span className="font-semibold text-base">{title}</span>
-            <span className="text-xs text-gray-500">{description}</span>
+            <span className="font-semibold text-xs max-w-[107px] h-[60px] break-words">{title}</span>
           </div>
           <button className="cursor-pointer" onClick={() => removeTask(id)}>
             <svg
@@ -74,34 +90,42 @@ const Task = ({id, title, description, status}: {id: string; title: string; desc
             </svg>
           </button>
         </div>
-      }
-      dialogTitle="Udpate a Task"
-      dialogDescription="You can update the title and/or description"
-      formName="update-task-form"
-      submitBtnText="Update Task"
-    >
-      <form id="update-task-form" className="grid gap-4 py-4" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Input
-            id="title"
-            name="title"
-            value={taskTitle}
-            onChange={(e) => setTaskTitle(e.target.value)}
-            className="col-span-4"
-          />
-        </div>
-        <div className="grid grid-cols-4 items-center gap-4">
-          <Textarea
-            id="description"
-            name="description"
-            value={taskDesc}
-            onChange={(e) => setTaskDesc(e.target.value)}
-            placeholder="Description..."
-            className="col-span-4"
-          />
-        </div>
-      </form>
-    </CustomDialog>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Udpate Task</SheetTitle>
+          <SheetDescription>Make changes to your task here. Click save when you're done.</SheetDescription>
+        </SheetHeader>
+        <form id="update-task-form" className="grid gap-4 py-4" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Input
+              id="title"
+              name="title"
+              value={taskTitle}
+              onChange={(e) => setTaskTitle(e.target.value)}
+              className="col-span-4"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Textarea
+              id="description"
+              name="description"
+              value={taskDesc}
+              onChange={(e) => setTaskDesc(e.target.value)}
+              placeholder="Description..."
+              className="col-span-4"
+            />
+          </div>
+        </form>
+        <SheetFooter>
+          <SheetClose asChild>
+            <Button type="submit" form="update-task-form">
+              Save
+            </Button>
+          </SheetClose>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 };
 

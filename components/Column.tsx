@@ -7,9 +7,10 @@ import {cn} from "../lib/utils";
 type ColumnProps = {
   columnTitle: string;
   status: any;
+  max: number;
 };
 
-const Column = ({columnTitle, status}: ColumnProps) => {
+const Column = ({columnTitle, status, max}: ColumnProps) => {
   const tasks = useStore((state) => state.tasks);
   const dragTask = useStore((state) => state.dragTask);
 
@@ -36,15 +37,25 @@ const Column = ({columnTitle, status}: ColumnProps) => {
     setIsDraggedOverCurrentColumn(true);
   };
 
+  const hasMaxReached = filteredTasks.length > max;
+
   return (
-    <div className="flex flex-col gap-2 flex-1 min-h-[470px] max-h-max">
-      <h2 className="text-xl text-gray-300 font-bold">{columnTitle}</h2>
+    <div className={cn("flex flex-col gap-2 flex-1 min-h-[470px] max-h-max")}>
+      <h2 className="text-xl text-gray-300 font-bold flex gap-2">
+        <span>{columnTitle}</span>
+        <span className={`${hasMaxReached && "text-red-400"}`}>
+          ({filteredTasks.length}/{max})
+        </span>
+      </h2>
       <div
         className={cn(
           `bg-gradient-to-br from-gray-800 to-gray-700 
                       rounded-lg flex flex-col gap-2 p-4
                       h-full`,
-          {"border-2 border-dotted": isDraggedOverCurrentColumn}
+          {"border-2 border-dotted": isDraggedOverCurrentColumn},
+          {
+            "bg-gradient-to-br from-red-400 to-red-700 ": hasMaxReached,
+          }
         )}
         onDrop={handleDrop}
         onDragOver={handleDragOver}

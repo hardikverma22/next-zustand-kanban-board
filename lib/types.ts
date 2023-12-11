@@ -8,4 +8,5 @@ export type TaskType = {
 export type ColumnType = {
   id: string;
   name: string;
+  max: number;
 };
