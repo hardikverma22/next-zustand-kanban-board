@@ -6,7 +6,7 @@ This repository contains a simple Kanban Board built using Next.js and Zustand. 
 
 ### Live Demo
 
-Check out the live demo here.
+Check out the live demo [here](https://next-zustand-kanban-board-hardiks-projects-fd3e0599.vercel.app/).
 
 ### Features
 
