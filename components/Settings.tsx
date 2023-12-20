@@ -1,12 +1,12 @@
 "use client";
-import {Cross1Icon, GearIcon, PlusIcon} from "@radix-ui/react-icons";
-import {Button} from "./ui/button";
-import {useStore} from "../lib/store";
-import {Input} from "./ui/input";
 import {useEffect, useState} from "react";
-import {ColumnType} from "../lib/types";
 import {v4 as uuidv4} from "uuid";
 
+import {Button} from "./ui/button";
+import {Input} from "./ui/input";
+import {Cross1Icon, GearIcon, PlusIcon} from "@radix-ui/react-icons";
+import {useStore} from "../lib/store";
+import {ColumnType} from "../lib/types";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 
 const MAX_COL_COUNT = 5;
@@ -54,6 +54,8 @@ const Settings = () => {
     setColumns(newColumns);
   };
 
+  const hasMaxCountReached: boolean = columns.length === MAX_COL_COUNT;
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -66,10 +68,9 @@ const Settings = () => {
         <DialogHeader>
           <DialogTitle>Udpate Settings</DialogTitle>
         </DialogHeader>
-        <div className="w-full flex justify-between">
-          <span className="underline underline-offset-2">Column Settings</span>
-          <Button size="sm" className="h-8 w-12" variant="outline" onClick={handleAddNewColumn}>
-            <PlusIcon />
+        <div className="w-full flex justify-end">
+          <Button size="sm" disabled={hasMaxCountReached} variant="default" onClick={handleAddNewColumn}>
+            <PlusIcon /> Add Column
           </Button>
         </div>
 
@@ -94,6 +95,7 @@ const Settings = () => {
                   defaultValue={column.max}
                   type="number"
                   className="w-[20%]"
+                  min={1}
                 />
               </div>
             </div>

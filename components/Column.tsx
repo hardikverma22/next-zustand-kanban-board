@@ -1,8 +1,9 @@
 "use client";
 import Task from "./Task";
 import {useStore} from "@/lib/store";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {cn} from "../lib/utils";
+import {Droppable, Draggable} from "react-beautiful-dnd";
 
 type ColumnProps = {
   columnTitle: string;
@@ -12,60 +13,60 @@ type ColumnProps = {
 
 const Column = ({columnTitle, status, max}: ColumnProps) => {
   const tasks = useStore((state) => state.tasks);
-  const dragTask = useStore((state) => state.dragTask);
-
-  const updateTaskStatus = useStore((state) => state.updateTaskStatus);
-
-  const filteredTasks = tasks.filter((task) => task.status === status);
-  const draggedTask = useStore((state) => state.draggedTask);
-
-  const [isDraggedOverCurrentColumn, setIsDraggedOverCurrentColumn] = useState(false);
-
-  const handleDrop = () => {
-    if (!draggedTask) return;
-    updateTaskStatus(draggedTask, status);
-    dragTask(null);
-    setIsDraggedOverCurrentColumn(false);
-  };
+  const filteredTasks = tasks && tasks.length > 0 ? tasks.filter((task) => task.status === status) : [];
 
   useEffect(() => {
     useStore.persist.rehydrate();
   }, []);
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDraggedOverCurrentColumn(true);
-  };
-
   const hasMaxReached = filteredTasks.length > max;
 
+  const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
+    ...draggableStyle,
+    userSelect: "none",
+    background: isDragging ? "lightgreen" : "grey",
+    marginTop: isDragging ? "45px" : "0px",
+  });
+
   return (
-    <div className={cn("flex flex-col gap-2 flex-1 min-h-[470px] max-h-max")}>
-      <h2 className="text-xl text-gray-300 font-bold flex gap-2">
-        <span>{columnTitle}</span>
-        <span className={`${hasMaxReached && "text-red-400"}`}>
-          ({filteredTasks.length}/{max})
-        </span>
-      </h2>
-      <div
-        className={cn(
-          `bg-gradient-to-br from-gray-800 to-gray-700 
-                      rounded-lg flex flex-col gap-2 p-4
-                      h-full`,
-          {"border-2 border-dotted": isDraggedOverCurrentColumn},
-          {
-            "bg-gradient-to-br from-red-400 to-red-700 ": hasMaxReached,
-          }
-        )}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={() => setIsDraggedOverCurrentColumn(false)}
-      >
-        {filteredTasks.map((task) => (
-          <Task {...task} key={task.id} />
-        ))}
-      </div>
-    </div>
+    <Droppable droppableId={status}>
+      {(provided) => (
+        <div
+          {...provided.droppableProps}
+          ref={provided.innerRef}
+          className={cn(
+            "flex flex-col gap-2 flex-1 min-h-[470px] bg-gradient-to-br from-gray-800 to-gray-700 rounded-md"
+          )}
+        >
+          <div className="px-3 py-1 bg-gray-300/10">
+            <h2 className="text-lg tracking-wider text-gray-300 font-normal flex gap-2 justify-between">
+              <span>{columnTitle}</span>
+              <span className={`${hasMaxReached && "text-red-400"}`}>
+                ({filteredTasks.length}/{max})
+              </span>
+            </h2>
+          </div>
+
+          <div className="flex flex-col gap-2 p-2">
+            {filteredTasks.map((item, index) => (
+              <Draggable key={item.id} draggableId={item.id} index={index}>
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+                  >
+                    <Task {...item} key={item.id} isDragging={snapshot.isDragging} />
+                  </div>
+                )}
+              </Draggable>
+            ))}
+          </div>
+          {provided.placeholder}
+        </div>
+      )}
+    </Droppable>
   );
 };
 

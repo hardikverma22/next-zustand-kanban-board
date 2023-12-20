@@ -1,24 +1,11 @@
 "use client";
 import {Button} from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import {Input} from "@/components/ui/input";
 import {useStore} from "../lib/store";
 import {Textarea} from "./ui/textarea";
 import {cn} from "../lib/utils";
 import {useState} from "react";
-import CustomDialog from "./CustomDialog";
-
-// import {Button} from "@/components/ui/button";
-// import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
 import {
   Sheet,
   SheetClose,
@@ -30,15 +17,20 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-const Task = ({id, title, description, status}: {id: string; title: string; description?: string; status: string}) => {
+interface TaskProps {
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+  isDragging: boolean;
+}
+
+const Task = ({id, title, description, status, isDragging}: TaskProps) => {
   const [taskTitle, setTaskTitle] = useState(title);
   const [taskDesc, setTaskDesc] = useState(description);
 
   const removeTask = useStore((state) => state.removeTask);
-  const dragTask = useStore((state) => state.dragTask);
   const updateTask = useStore((state) => state.updateTask);
-
-  const [isDragging, setIsDragging] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,18 +51,9 @@ const Task = ({id, title, description, status}: {id: string; title: string; desc
           className={cn(
             "cursor-grab min-h-[80px] flex justify-between items-start p-2 bg-white text-black rounded-lg",
             {
-              "border-2 border-sky-500": status === "TODO",
-              "border-2 border-amber-500": status === "IN_PROGRESS",
-              "border-2 border-emerald-500": status === "DONE",
-              "opacity-75 shadow-md border-dotted border-4": isDragging,
+              "opacity-75 shadow-md border-dotted border-4 border-black": isDragging,
             }
           )}
-          draggable
-          onDragStart={() => {
-            dragTask(id);
-            setIsDragging(true);
-          }}
-          onDragEnd={() => setIsDragging(false)}
         >
           <div className="flex flex-col gap-2">
             <span className="font-semibold text-xs max-w-[107px] h-[60px] break-words">{title}</span>
