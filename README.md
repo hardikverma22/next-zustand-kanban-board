@@ -23,16 +23,12 @@ To run this project locally, follow these steps:
 #### Clone the Repository:
 
 ```
-bash
-Copy code
 git clone https://github.com/hardikverma22/next-zustand-kanban-board.git
 ```
 
 #### Install Dependencies:
 
 ```
-bash
-Copy code
 cd next-zustand-kanban-board
 pnpm install
 ```
@@ -40,8 +36,6 @@ pnpm install
 #### Run the Application:
 
 ```
-bash
-Copy code
 pnpm dev
 ```
 
